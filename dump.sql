@@ -1,62 +1,62 @@
 CREATE TABLE properties (
                             id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY
-                                COMMENT 'Primaarvõti, kasutame INT, sest TINYINT oleks liiga väike suure objektiarvu korral. AUTO_INCREMENT loob unikaalse ID automaatselt.',
+                                COMMENT 'Primaarvõti (UNSIGNED INT), et välistada negatiivsed ID-d ja anda suurem positiivne vahemik. AUTO_INCREMENT loob iga uue rida jaoks unikaalse ID.',
                             address VARCHAR(255) NOT NULL
-                                COMMENT 'Kinnisvara aadress. VARCHAR(255) on piisavalt pikk, kuna aadressid võivad olla erineva pikkusega.',
+                                COMMENT 'Kinnisvara aadress. 255 märki on piisav, kuna aadressid võivad olla pikkade tänavanimedega.',
                             city VARCHAR(255) NOT NULL
-                                COMMENT 'Linn/asula nimi. VARCHAR(100) katab enamasti kõik juhtumid, sest linnade nimed pole tavaliselt väga pikad.',
+                                COMMENT 'Linna või asula nimi. Suurendatud 255-ni juhuks, kui nimi on pikem kui 100 märki.',
                             postal_code VARCHAR(100) NOT NULL
-                                COMMENT 'Postiindeks (võib sisaldada ka tähti/märke). INT ei sobiks, kuna mõnel pool on formaadis täht+number.',
+                                COMMENT 'Postiindeks või -kood, mis võib sisaldada tähti, sidekriipse jms (seetõttu VARCHAR, mitte INT). Pikkus tõstetud 100-ni, et katta keerukamad vormid.',
                             type VARCHAR(100) NOT NULL
-                                COMMENT 'Kinnisvara tüüp (nt maja, korter, krunt). VARCHAR(50) piisab tüübi nimetuse hoidmiseks.',
+                                COMMENT 'Kinnisvara tüüp (nt maja, korter, krunt). Suurendatud 100-ni, et vajadusel mahutada pikemaid kirjeldusi.',
                             size_m2 INT UNSIGNED NOT NULL
-                                COMMENT 'Suurus m². UNSIGNED INT, sest ruutmeetrite arv on alati positiivne; TINYINT oleks liiga väike suuremate objektide korral.',
+                                COMMENT 'Suurus ruutmeetrites. UNSIGNED INT, sest väärtus ei või olla negatiivne ja TINYINT jääks liiga väikeseks suuremate objektide korral.',
 
                             INDEX (city),
                             INDEX (postal_code)
 ) ENGINE=InnoDB;
 
 CREATE TABLE agents (
-                        id INT  UNSIGNED AUTO_INCREMENT PRIMARY KEY
-                            COMMENT 'Primaarvõti. Kasutame INT, et mahutada suur hulk maaklereid. AUTO_INCREMENT tagab unikaalse ID.',
+                        id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY
+                            COMMENT 'Primaarvõti (UNSIGNED), et vältida negatiivseid ID-sid. AUTO_INCREMENT tekitab unikaalse ID iga maakleri jaoks.',
                         name VARCHAR(255) NOT NULL
-                            COMMENT 'Maakleri nimi. VARCHAR(100) sobib ka pikemate nimede jaoks.',
+                            COMMENT 'Maakleri nimi. Suurendatud 255-ni, et toetada ka pikemaid või kahetiseid nimesid.',
                         phone VARCHAR(100) NOT NULL
-                            COMMENT 'Maakleri telefon, salvestame tekstina (mitte INT) kuna numbrid võivad sisaldada sümboleid (+, -) ja algusnulli.',
+                            COMMENT 'Telefoninumber. Kasutame VARCHAR, sest see võib sisaldada +, -, () jm sümboleid. Pikendatud 100-ni, et toetada rahvusvahelisi vorminguid.',
                         email VARCHAR(255) NOT NULL
-                            COMMENT 'Maakleri e-posti aadress. VARCHAR(255) on tavaline maksimaalne pikkus e-posti väljade jaoks.'
+                            COMMENT 'Maakleri e-posti aadress, max 255 märki on standardne, et ka pikemad domeeninimed ära mahuksid.'
 ) ENGINE=InnoDB;
 
 CREATE TABLE sellers (
                          id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY
-                             COMMENT 'Primaarvõti. Kasutame INT suure hulga müüjate jaoks, AUTO_INCREMENT tekitab unikaalse ID.',
+                             COMMENT 'Primaarvõti (UNSIGNED). Kasutame INT, et mahutada palju müüjaid, ja välistada negatiivsed ID-d.',
                          name VARCHAR(255) NOT NULL
-                             COMMENT 'Müüja/omaniku/kontaktisiku nimi. VARCHAR(100) on piisav enamiku nimede jaoks.',
+                             COMMENT 'Müüja või kontaktisiku nimi. Suurendatud 255-ni pikemate nimede või topeltnimede jaoks.',
                          phone VARCHAR(100) NOT NULL
-                             COMMENT 'Kontakttelefon, tekstivormingus, sest võib sisaldada +, - või teisi märke.',
+                             COMMENT 'Kontakttelefon (VARCHAR). 100 märki, kuna telefon võib sisaldada riigikoodi, plussmärki, tühikuid jne.',
                          email VARCHAR(255) NOT NULL
-                             COMMENT 'Kontakt-e-post. VARCHAR(255) katab pikemad domeeninimed.'
+                             COMMENT 'Kontakt-e-post. 255 on tavapärane maksimaalne pikkus e-postide salvestamiseks.'
 ) ENGINE=InnoDB;
 
 CREATE TABLE listings (
                           id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY
-                              COMMENT 'Primaarvõti, kuulutuse ainulaadne ID. INT on piisav suure kuulutuste mahu jaoks.',
+                              COMMENT 'Primaarvõti (UNSIGNED INT), et ID-d oleksid alati positiivsed. AUTO_INCREMENT pakub järjestikuseid ID-sid.',
                           property_id INT NOT NULL
-                              COMMENT 'Viitab properties.id-le. Kasutame INT NOT NULL, sest ilma kinnisvaraobjektita kuulutust ei saa olla.',
+                              COMMENT 'Viitab properties.id-le. INT, kuna see on piisav enamiku projektide jaoks. NOT NULL, sest kuulutus peab kuuluma konkreetsele kinnisvaraobjektile.',
                           agent_id INT NULL
-                              COMMENT 'Viitab agents.id-le, võib olla NULL kui maaklerit pole. INT on piisav maaklerite arvu jaoks.',
+                              COMMENT 'Viitab agents.id-le, võib olla NULL, kui maaklerit pole. INT on piisav maaklerite ID-de jaoks.',
                           seller_id INT NOT NULL
-                              COMMENT 'Viitab sellers.id-le. Kasutame INT NOT NULL, kuna igal kuulutusel peab olema müüja.',
+                              COMMENT 'Viitab sellers.id-le. NOT NULL, sest igal kuulutusel on müüja või omaniku info.',
                           title VARCHAR(255) NOT NULL
-                              COMMENT 'Kuulutuse pealkiri, max 255 märki. VARCHAR sobib lühikese tekstina.',
+                              COMMENT 'Kuulutuse pealkiri, kuni 255 märki. Sobib hästi lühikese, kuid paindliku tekstiväljana.',
                           description TEXT NOT NULL
-                              COMMENT 'Pikem kirjeldus, TEXT võimaldab salvestada rohkem kui 255 märki.',
+                              COMMENT 'Pikem kirjeldus. TEXT võimaldab salvestada rohkem infot kui VARCHAR(255).',
                           price DECIMAL(10,2) UNSIGNED NOT NULL
-                              COMMENT 'Hind rahalises väärtuses. DECIMAL(10,2) tagab täpsuse rahasummadega, FLOAT võiks tekitada ümardusprobleeme.',
+                              COMMENT 'Hind. DECIMAL(10,2) hoiab ära ujukomavigu, UNSIGNED, sest hind ei ole negatiivne.',
                           created_at DATETIME NOT NULL
-                              COMMENT 'Kuulutuse loomise aeg. DATETIME valime TIMESTAMP asemel, et vältida ajavööndi ja 2038. aasta piiranguid.',
+                              COMMENT 'Kuulutuse loomise aeg. DATETIME väldib TIMESTAMPi ajavööndipiiranguid ja 2038. a probleemi.',
                           updated_at DATETIME NOT NULL
-                              COMMENT 'Kuulutuse uuendamise aeg. Sama põhjendus kui created_at juures.',
+                              COMMENT 'Viimase uuenduse aeg. DATETIME valik samadel põhjustel kui created_at.',
 
                           FOREIGN KEY (property_id) REFERENCES properties(id),  -- Seos kinnisvaraobjektiga
                           FOREIGN KEY (agent_id) REFERENCES agents(id),         -- Seos maakleriga (võib olla NULL)
@@ -65,17 +65,17 @@ CREATE TABLE listings (
 
 CREATE TABLE view_stats (
                             id INT AUTO_INCREMENT PRIMARY KEY
-                                COMMENT 'Primaarvõti, automaatne ID. INT katab ära suure vaatamiste hulga.',
+                                COMMENT 'Primaarvõti (INT). AUTO_INCREMENT tekitab unikaalse rea igale vaatamisele. UNSIGNED võib kasutada, kuid INT on siin samuti toimiv.',
                             listing_id INT UNSIGNED NOT NULL
-                                COMMENT 'Viitab listings.id-le, näitab millist kuulutust vaadati. INT NOT NULL, sest vaatamise kirje peab alati kuulutama kehtivale kuulutusele.',
+                                COMMENT 'Viitab listings.id-le. UNSIGNED, sest listings.id on samuti UNSIGNED. NOT NULL, sest vaatamise kirje peab kehtima konkreetsel kuulutusel.',
                             view_date DATETIME NOT NULL
-                                COMMENT 'Vaatamise kuupäev/kellaaeg. DATETIME, et säilitada täpne aeg ja vältida timestampi ajalist piirangut.',
+                                COMMENT 'Vaatamise kuupäev ja kellaaeg. DATETIME, et hoida täpset timestampi ja vältida ajavööndi konversioone.',
                             ip_address VARCHAR(255) NOT NULL
-                                COMMENT 'Külastaja IP-aadress. 45 märki hõlmab nii IPv4 kui IPv6 näiteid.',
+                                COMMENT 'Külastaja IP-aadress või muu identifikaator. Pikendatud 255-ni, et katta potentsiaalselt täiendava info.',
                             user_agent VARCHAR(255) NOT NULL
-                                COMMENT 'Brauseri User-Agent. Tekst võib olla pikk, mistõttu VARCHAR(255).',
+                                COMMENT 'Brauseri User-Agent string. 255 märki on enamasti piisav pikemate stringide jaoks.',
                             created_at DATETIME NOT NULL
-                                COMMENT 'Kirje loomise aeg. DATETIME pakub ühtlustatud mudelit, ei sõltu serveri ajavööndist nagu TIMESTAMP.',
+                                COMMENT 'Kirje loomise aeg. Kasutame DATETIME samadel alustel, mis mujal.',
 
                             FOREIGN KEY (listing_id) REFERENCES listings(id)       -- Seos vaatamise ja kuulutuse vahel
 ) ENGINE=InnoDB;
