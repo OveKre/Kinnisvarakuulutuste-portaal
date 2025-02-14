@@ -30,7 +30,7 @@ CREATE TABLE agents (
 CREATE TABLE sellers (
                          id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY
                              COMMENT 'Primaarvõti. Kasutame INT suure hulga müüjate jaoks, AUTO_INCREMENT tekitab unikaalse ID.',
-                         name VARCHAR(1255) NOT NULL
+                         name VARCHAR(255) NOT NULL
                              COMMENT 'Müüja/omaniku/kontaktisiku nimi. VARCHAR(100) on piisav enamiku nimede jaoks.',
                          phone VARCHAR(100) NOT NULL
                              COMMENT 'Kontakttelefon, tekstivormingus, sest võib sisaldada +, - või teisi märke.',
