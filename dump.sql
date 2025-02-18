@@ -41,11 +41,11 @@ CREATE TABLE sellers (
 CREATE TABLE listings (
                           id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY
                               COMMENT 'Primaarvõti (UNSIGNED INT), et ID-d oleksid alati positiivsed. AUTO_INCREMENT pakub järjestikuseid ID-sid.',
-                          property_id INT NOT NULL
+                          property_id INT UNSIGNED NOT NULL
                               COMMENT 'Viitab properties.id-le. INT, kuna see on piisav enamiku projektide jaoks. NOT NULL, sest kuulutus peab kuuluma konkreetsele kinnisvaraobjektile.',
-                          agent_id INT NULL
+                          agent_id INT UNSIGNED NULL
                               COMMENT 'Viitab agents.id-le, võib olla NULL, kui maaklerit pole. INT on piisav maaklerite ID-de jaoks.',
-                          seller_id INT NOT NULL
+                          seller_id INT UNSIGNED NOT NULL
                               COMMENT 'Viitab sellers.id-le. NOT NULL, sest igal kuulutusel on müüja või omaniku info.',
                           title VARCHAR(255) NOT NULL
                               COMMENT 'Kuulutuse pealkiri, kuni 255 märki. Sobib hästi lühikese, kuid paindliku tekstiväljana.',
@@ -58,13 +58,13 @@ CREATE TABLE listings (
                           updated_at DATETIME NOT NULL
                               COMMENT 'Viimase uuenduse aeg. DATETIME valik samadel põhjustel kui created_at.',
 
-                          FOREIGN KEY (property_id) REFERENCES properties(id),  -- Seos kinnisvaraobjektiga
-                          FOREIGN KEY (agent_id) REFERENCES agents(id),         -- Seos maakleriga (võib olla NULL)
-                          FOREIGN KEY (seller_id) REFERENCES sellers(id)        -- Seos müüjaga
+                          FOREIGN KEY (property_id) REFERENCES properties(id),  -- Seos kinnisvaraobjektiga --
+                          FOREIGN KEY (agent_id) REFERENCES agents(id),         -- Seos maakleriga (võib olla NULL) --
+                          FOREIGN KEY (seller_id) REFERENCES sellers(id)        -- Seos müüjaga --
 ) ENGINE=InnoDB;
 
 CREATE TABLE view_stats (
-                            id INT AUTO_INCREMENT PRIMARY KEY
+                            id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY
                                 COMMENT 'Primaarvõti (INT). AUTO_INCREMENT tekitab unikaalse rea igale vaatamisele. UNSIGNED võib kasutada, kuid INT on siin samuti toimiv.',
                             listing_id INT UNSIGNED NOT NULL
                                 COMMENT 'Viitab listings.id-le. UNSIGNED, sest listings.id on samuti UNSIGNED. NOT NULL, sest vaatamise kirje peab kehtima konkreetsel kuulutusel.',
